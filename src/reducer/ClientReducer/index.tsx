@@ -42,21 +42,6 @@ const clientReducer = (
         console.log("!Screensharingstate", state, stateUpdate);
       }
       break;
-    case "EndCall":
-      if (actionTypeGuard(action, action.type)) {
-        stateUpdate = {
-          max: [
-            {
-              uid: 0,
-              hasAudio: remoteTrackState.no,
-              hasVideo: remoteTrackState.no,
-            },
-          ],
-          min: [],
-          isScreensharing: false,
-        };
-      }
-      break;
     case "update-user-video":
       if (actionTypeGuard(action, action.type)) {
         stateUpdate = {

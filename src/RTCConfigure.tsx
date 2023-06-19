@@ -6,7 +6,7 @@ import React, {
   useReducer,
   PropsWithChildren,
 } from "react";
-import { RtcProvider } from "./RtcContext";
+import { RtcProvider, ActionType } from "./RtcContext";
 import PropsContext, {
   RtcPropsInterface,
   UIKitUser,
@@ -15,7 +15,11 @@ import PropsContext, {
   CallbacksInterface,
 } from "./PropsContext";
 import { MaxUidProvider } from "./MaxUidContext";
-import AgoraRTC, { ILocalVideoTrack, UID } from "agora-rtc-sdk-ng";
+import AgoraRTC, {
+  ILocalVideoTrack,
+  UID,
+  IAgoraRTCRemoteUser,
+} from "agora-rtc-sdk-ng";
 import { MinUidProvider } from "./MinUidContext";
 import TracksContext from "./TracksContext";
 import clientReducer, { initState } from "./Reducer/ClientReducer";
@@ -68,6 +72,10 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
     max: UIKitUser[];
     min: UIKitUser[];
   };
+  // type DispatchType<
+  //   T extends keyof CallbacksInterface = keyof CallbacksInterface
+  // > = (action: { type: T; value: Parameters<CallbacksInterface[T]> }) => void;
+
   const [uidState, dispatch] = useReducer<React.Reducer<stateType, any>>(
     clientReducer,
     initState
