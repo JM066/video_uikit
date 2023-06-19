@@ -1,23 +1,16 @@
-import React, { useContext } from 'react'
-import RtcContext from '../../RtcContext'
-import BtnTemplate from '../BtnTemplate'
-import PropsContext from '../../PropsContext'
+import React, { useContext } from "react";
+import RtcContext, { RtcContextInterface } from "../../RtcContext";
+import BtnTemplate from "../BtnTemplate";
 
 function Screenshare() {
-  const { styleProps } = useContext(PropsContext)
-  const { localBtnStyles } = styleProps || {}
-  const { screenshare } = localBtnStyles || {}
-  const { toggleScreensharing, isScreensharing } = useContext(RtcContext)
-
+  const { isScreensharing, toggleScreensharing } =
+    useContext<RtcContextInterface>(RtcContext);
   return (
-    <div>
-      <BtnTemplate
-        style={screenshare}
-        name={isScreensharing ? 'stop' : 'screen'}
-        onClick={() => toggleScreensharing()}
-      />
-    </div>
-  )
+    <BtnTemplate
+      name={isScreensharing ? "stop" : "screen"}
+      onClick={() => toggleScreensharing()}
+    />
+  );
 }
 
-export default Screenshare
+export default Screenshare;

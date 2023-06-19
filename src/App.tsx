@@ -1,8 +1,14 @@
 import "./App.css";
 import React, { useContext, useState } from "react";
-import PropsContext, { PropsProvider, layout } from "./PropsContext";
+import PropsContext, {
+  PropsProvider,
+  PropsInterface,
+  RtcPropsInterface,
+  layout,
+} from "./PropsContext";
 import TracksConfigure from "./TracksConfigure";
 import RtcConfigure from "./RTCConfigure";
+import Screenshare from "./Controls/Local/Screenshare";
 import LocalUserContext from "./LocalUserContext";
 // import RtmConfigure from "./RTMConfigure";
 import GridVideo from "./GridVideo";
@@ -12,17 +18,20 @@ import GridVideo from "./GridVideo";
 // }
 
 export const VideocallUI = () => {
+  const { rtcProps } = useContext<PropsInterface>(PropsContext);
   return (
-    <RtcConfigure>
-      {/* <LocalUserContext> */}
-      <GridVideo />
-      {/* </LocalUserContext> */}
+    <RtcConfigure callActive={rtcProps.callActive}>
+      <LocalUserContext>
+        <GridVideo />
+      </LocalUserContext>
+      {rtcProps.role !== "audience" && rtcProps.enableScreensharing && (
+        <Screenshare />
+      )}
     </RtcConfigure>
   );
 };
-const AgoraUIKit = (props) => {
-  const { styleProps, rtcProps } = props;
-  console.error("rtcProps,", rtcProps);
+const AgoraUIKit: React.FC<PropsInterface> = (props: PropsInterface) => {
+  const { rtcProps } = props;
   return (
     <PropsProvider value={props}>
       <div>
@@ -60,6 +69,7 @@ function App() {
           dualStreamMode: undefined,
           layout: layout.grid,
           role: isHost ? "host" : "audience",
+          enableScreensharing: true,
           enableVideo: true,
           enableAudio: true,
           username: "user",

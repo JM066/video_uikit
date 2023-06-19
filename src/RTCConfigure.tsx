@@ -6,7 +6,7 @@ import React, {
   useReducer,
   PropsWithChildren,
 } from "react";
-import { RtcProvider, ActionType } from "./RtcContext";
+import { RtcProvider } from "./RtcContext";
 import PropsContext, {
   RtcPropsInterface,
   UIKitUser,
@@ -19,7 +19,6 @@ import AgoraRTC, { ILocalVideoTrack, UID } from "agora-rtc-sdk-ng";
 import { MinUidProvider } from "./MinUidContext";
 import TracksContext from "./TracksContext";
 import reducer, { initState } from "./Reducer";
-import {} from "./PropsContext";
 import {
   startScreenshare,
   stopScreenshare,
@@ -47,13 +46,13 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
       console.log(reject);
     })
   );
-  console.log("propsss", props);
+
   let client = useClient;
-  // if (rtcProps.customRtcClient) {
-  //   // if customRtcClient prop is set then use custom client
-  //   client.removeAllListeners();
-  //   client = rtcProps.customRtcClient;
-  // }
+  if (rtcProps.customRtcClient) {
+    // if customRtcClient prop is set then use custom client
+    client.removeAllListeners();
+    client = rtcProps.customRtcClient;
+  }
 
   let localVideoTrackHasPublished = false;
   let localAudioTrackHasPublished = false;
@@ -65,9 +64,14 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
     callActive = true;
   }
 
-  const [uidState, dispatch] = useReducer<
-    React.Reducer<stateType, ActionType<keyof CallbacksInterface>>
-  >(reducer, initState);
+  type stateType = {
+    max: UIKitUser[];
+    min: UIKitUser[];
+  };
+  const [uidState, dispatch] = useReducer<React.Reducer<stateType, any>>(
+    reducer,
+    initState
+  );
 
   // init rtcEngine
   useEffect(() => {
@@ -472,11 +476,9 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
         toggleScreensharing: toggleScreensharing,
         isScreensharing: isScreensharingRef.current,
       }}
-      {...props}
     >
       <MaxUidProvider value={uidState.max}>
         <MinUidProvider value={uidState.min}>
-          {/* <MinUidProvider value={uidState.min}> */}
           {ready ? props.children : null}
         </MinUidProvider>
       </MaxUidProvider>
