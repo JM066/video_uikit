@@ -1,24 +1,21 @@
-import "./App.css";
-import React, { useContext, useState } from "react";
+import * as React from "react";
+import { useContext, useState } from "react";
 import PropsContext, {
   PropsProvider,
   PropsInterface,
-  RtcPropsInterface,
   layout,
 } from "./PropsContext";
+import RtcContext from "./RtcContext";
 import TracksConfigure from "./TracksConfigure";
 import RtcConfigure from "./RTCConfigure";
 import Screenshare from "./Controls/Local/Screenshare";
 import LocalUserContext from "./LocalUserContext";
-// import RtmConfigure from "./RTMConfigure";
 import GridVideo from "./GridVideo";
-
-// function MyGridVideo() {
-//   return <GridVideo />;
-// }
 
 export const VideocallUI = () => {
   const { rtcProps } = useContext<PropsInterface>(PropsContext);
+  const { dispatch } = useContext(RtcContext);
+  console.log("dispatch", dispatch);
   return (
     <RtcConfigure callActive={rtcProps.callActive}>
       <LocalUserContext>
@@ -49,12 +46,16 @@ const AgoraUIKit: React.FC<PropsInterface> = (props: PropsInterface) => {
 function App() {
   const [videocall, setVideocall] = useState(true);
   const [isHost, setHost] = useState(true);
-  const [isPinned, setPinned] = useState(false);
   const [username, setUsername] = useState("");
-
+  // const dispatch = useContext(EventContext);
+  const handleEndCallClick = () => {
+    const event = new Event("agoraUIKitEndcall");
+    dispatch(event);
+  };
   return (
     <>
       <button onClick={() => setHost(!isHost)}>Change Role</button>
+
       <AgoraUIKit
         rtcProps={{
           appId: import.meta.env.VITE_APP_APPID,
@@ -72,10 +73,6 @@ function App() {
           enableScreensharing: true,
           enableVideo: true,
           enableAudio: true,
-          username: "user",
-          rtmToken: undefined,
-          showPopUpBeforeRemoteMute: true,
-          displayUsername: false,
         }}
         rtmProps={{ username: username || "user", displayUsername: true }}
         callbacks={{

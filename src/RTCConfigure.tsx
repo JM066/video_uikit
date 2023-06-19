@@ -18,7 +18,7 @@ import { MaxUidProvider } from "./MaxUidContext";
 import AgoraRTC, { ILocalVideoTrack, UID } from "agora-rtc-sdk-ng";
 import { MinUidProvider } from "./MinUidContext";
 import TracksContext from "./TracksContext";
-import reducer, { initState } from "./Reducer";
+import clientReducer, { initState } from "./Reducer/ClientReducer";
 import {
   startScreenshare,
   stopScreenshare,
@@ -69,7 +69,7 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
     min: UIKitUser[];
   };
   const [uidState, dispatch] = useReducer<React.Reducer<stateType, any>>(
-    reducer,
+    clientReducer,
     initState
   );
 

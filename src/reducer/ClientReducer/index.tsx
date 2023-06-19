@@ -1,13 +1,13 @@
-import { ActionType } from "./RtcContext";
+import { ActionType } from "../../RtcContext";
 import {
   UIKitUser,
   remoteTrackState,
   CallbacksInterface,
   RemoteUIKitUser,
   ToggleState,
-} from "./PropsContext";
+} from "../../PropsContext";
 
-import { actionTypeGuard } from "./Utils/actionTypeGuard";
+import { actionTypeGuard } from "../../Utils/actionTypeGuard";
 export declare type UID = number | string;
 
 export type stateType = {
@@ -28,7 +28,7 @@ export const initState = {
   isScreensharing: false,
 };
 
-const reducer = (
+const clientReducer = (
   state: stateType,
   action: ActionType<keyof CallbacksInterface>
 ) => {
@@ -40,6 +40,21 @@ const reducer = (
       if (actionTypeGuard(action, action.type)) {
         stateUpdate = { ...state, isScreensharing: action.value[0] };
         console.log("!Screensharingstate", state, stateUpdate);
+      }
+      break;
+    case "EndCall":
+      if (actionTypeGuard(action, action.type)) {
+        stateUpdate = {
+          max: [
+            {
+              uid: 0,
+              hasAudio: remoteTrackState.no,
+              hasVideo: remoteTrackState.no,
+            },
+          ],
+          min: [],
+          isScreensharing: false,
+        };
       }
       break;
     case "update-user-video":
@@ -370,4 +385,4 @@ const reducer = (
   return { ...state, ...stateUpdate };
 };
 
-export default reducer;
+export default clientReducer;

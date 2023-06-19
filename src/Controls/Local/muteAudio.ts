@@ -1,7 +1,7 @@
-import { DispatchType } from '../../RtcContext'
-import { LocalUIKitUser, ToggleState } from '../../PropsContext'
-import { ILocalAudioTrack } from 'agora-rtc-react'
-import { CallbacksInterface } from '../..'
+import { DispatchType } from "../../RtcContext";
+import { LocalUIKitUser, ToggleState } from "../../PropsContext";
+import { ILocalAudioTrack } from "agora-rtc-react";
+import { CallbacksInterface } from "../../reducer/ClientReducer";
 
 export default async (
   user: LocalUIKitUser,
@@ -11,7 +11,7 @@ export default async (
 ) => {
   // console.log('!mute audio', user)
   if (user.uid === 0) {
-    const localState = user.hasAudio
+    const localState = user.hasAudio;
     if (
       localState === ToggleState.enabled ||
       localState === ToggleState.disabled
@@ -20,38 +20,38 @@ export default async (
       let newState =
         localState === ToggleState.enabled
           ? ToggleState.disabling
-          : ToggleState.enabling
+          : ToggleState.enabling;
       dispatch({
-        type: 'local-user-mute-audio',
-        value: [newState]
-      })
+        type: "local-user-mute-audio",
+        value: [newState],
+      });
       callbacks &&
-        callbacks['local-user-mute-audio'] &&
-        callbacks['local-user-mute-audio'](newState)
+        callbacks["local-user-mute-audio"] &&
+        callbacks["local-user-mute-audio"](newState);
       try {
-        await localAudioTrack?.setEnabled(localState !== ToggleState.enabled)
+        await localAudioTrack?.setEnabled(localState !== ToggleState.enabled);
         // Enable UI
         newState =
           localState === ToggleState.enabled
             ? ToggleState.disabled
-            : ToggleState.enabled
+            : ToggleState.enabled;
         callbacks &&
-          callbacks['local-user-mute-audio'] &&
-          callbacks['local-user-mute-audio'](newState)
+          callbacks["local-user-mute-audio"] &&
+          callbacks["local-user-mute-audio"](newState);
         dispatch({
-          type: 'local-user-mute-audio',
+          type: "local-user-mute-audio",
           value: [
             localState === ToggleState.enabled
               ? ToggleState.disabled
-              : ToggleState.enabled
-          ]
-        })
+              : ToggleState.enabled,
+          ],
+        });
       } catch (e) {
         dispatch({
-          type: 'local-user-mute-audio',
-          value: [localState]
-        })
+          type: "local-user-mute-audio",
+          value: [localState],
+        });
       }
     }
   }
-}
+};
