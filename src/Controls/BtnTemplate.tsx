@@ -22,7 +22,7 @@ const BtnTemplate = (props: BtnTemplateInterface) => {
       }}
       onClick={onClick}
     >
-      <button>Screen Share</button>
+      <button>{name}</button>
     </div>
   );
 };

@@ -73,6 +73,8 @@ const clientReducer = (
       break;
     case "user-joined":
       if (actionTypeGuard(action, action.type)) {
+        console.log("uid,", uids, action.value[0].uid);
+
         if (uids.indexOf(action.value[0].uid) === -1) {
           const minUpdate: stateType["min"] = [
             ...state.min,
@@ -82,6 +84,7 @@ const clientReducer = (
               hasVideo: remoteTrackState.no,
             },
           ];
+
           if (minUpdate.length === 1 && state.max[0].uid === 0) {
             stateUpdate = {
               max: minUpdate,
@@ -95,7 +98,7 @@ const clientReducer = (
               isScreensharing: state.isScreensharing,
             };
           }
-          // console.log('new user joined!\n', action.value[0].uid)
+          console.error("new user joined!\n", stateUpdate);
         }
       }
       break;

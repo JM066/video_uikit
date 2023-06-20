@@ -31,7 +31,11 @@ const MaxVideoView = (props: { user: string }) => {
     }
   }, [user]);
 
-  return <div ref={childRef} style={{ width: "500px", height: "500px" }}></div>;
+  return (
+    <>
+      <div ref={childRef} style={{ width: "500px", height: "500px" }}></div>
+    </>
+  );
 };
 
 const styles = {

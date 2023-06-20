@@ -7,6 +7,7 @@ import React, {
   PropsWithChildren,
 } from "react";
 import { RtcProvider, ActionType } from "./RtcContext";
+import { stateType } from "./reducer/ClientReducer";
 import PropsContext, {
   RtcPropsInterface,
   UIKitUser,
@@ -15,14 +16,10 @@ import PropsContext, {
   CallbacksInterface,
 } from "./PropsContext";
 import { MaxUidProvider } from "./MaxUidContext";
-import AgoraRTC, {
-  ILocalVideoTrack,
-  UID,
-  IAgoraRTCRemoteUser,
-} from "agora-rtc-sdk-ng";
+import AgoraRTC, { ILocalVideoTrack, UID } from "agora-rtc-sdk-ng";
 import { MinUidProvider } from "./MinUidContext";
 import TracksContext from "./TracksContext";
-import clientReducer, { initState } from "./Reducer/ClientReducer";
+import clientReducer, { initState } from "./reducer/ClientReducer";
 import {
   startScreenshare,
   stopScreenshare,
@@ -50,7 +47,7 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
       console.log(reject);
     })
   );
-
+  console.error("canJoin", canJoin);
   let client = useClient;
   if (rtcProps.customRtcClient) {
     // if customRtcClient prop is set then use custom client
@@ -68,33 +65,25 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
     callActive = true;
   }
 
-  type stateType = {
-    max: UIKitUser[];
-    min: UIKitUser[];
-  };
-  // type DispatchType<
-  //   T extends keyof CallbacksInterface = keyof CallbacksInterface
-  // > = (action: { type: T; value: Parameters<CallbacksInterface[T]> }) => void;
-
-  const [uidState, dispatch] = useReducer<React.Reducer<stateType, any>>(
-    clientReducer,
-    initState
-  );
+  const [uidState, dispatch] = useReducer(clientReducer, initState);
 
   // init rtcEngine
   useEffect(() => {
     async function init() {
       try {
-        console.log(client);
         client.on("user-joined", async (...args) => {
+          console.log("screenshareUid!!", props);
           const [remoteUser] = args;
+
           if (
             (remoteUser.uid === props.screenshareUid &&
               isScreensharingRef.current) ||
             (remoteUser.uid === 1 && isScreensharingRef.current)
           ) {
+            console.log("remoteUser!!w", remoteUser);
           } else {
             mediaStore.current[remoteUser.uid] = {};
+            console.log("mediaStore!!", mediaStore);
           }
           dispatch({
             type: "user-joined",
@@ -105,7 +94,6 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
         client.on("user-published", async (...args) => {
           // Get current peer IDs
           const [remoteUser, mediaType] = args;
-          console.log("user-published", remoteUser.uid);
           if (
             (remoteUser.uid === props.screenshareUid &&
               isScreensharingRef.current) ||
@@ -119,12 +107,14 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
             client
               .subscribe(remoteUser, mediaType)
               .then((_e) => {
-                mediaStore.current[remoteUser.uid][mediaType + "Track"] =
-                  remoteUser[mediaType + "Track"];
-                if (mediaType === "audio") {
+                if (_e.trackMediaType === "audio") {
                   // eslint-disable-next-line no-unused-expressions
+                  mediaStore.current[remoteUser.uid].audioTrack =
+                    remoteUser.audioTrack;
                   remoteUser.audioTrack?.play();
                 } else {
+                  mediaStore.current[remoteUser.uid].videoTrack =
+                    remoteUser.videoTrack;
                   if (rtcProps.enableDualStream && rtcProps.dualStreamMode) {
                     client.setStreamFallbackOption(
                       remoteUser.uid,
@@ -132,6 +122,7 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
                     );
                   }
                 }
+                console.error("mediaTrack", mediaStore.current);
                 dispatch({
                   type: "user-published",
                   value: args,
@@ -236,6 +227,7 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
     }
 
     if (joinRes) {
+      console.log("joinRes", joinRes);
       init();
       return () => {
         try {
@@ -336,9 +328,9 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
             localVideoTrackHasPublished = true;
           });
         }
+        console.log("localVideoTrackHasPublished", localVideoTrackHasPublished);
       }
     }
-    console.log("Publish", localVideoTrack, localAudioTrack, callActive);
     if (callActive) {
       publish();
     }
@@ -438,6 +430,7 @@ const RtcConfigure: React.FC<PropsWithChildren<Partial<RtcPropsInterface>>> = (
         {},
         "disable"
       );
+
       const uid = rtcProps.screenshareUid || 1; // 1 is default
       mediaStore.current[uid] = { videoTrack: screenTrack.current };
       screenTrack.current.on("track-ended", () => {

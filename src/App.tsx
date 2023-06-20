@@ -5,10 +5,8 @@ import PropsContext, {
   PropsInterface,
   layout,
 } from "./PropsContext";
-import RtcContext from "./RtcContext";
 import TracksConfigure from "./TracksConfigure";
 import RtcConfigure from "./RTCConfigure";
-// import Screenshare from "./Controls/Local/Screenshare";
 import LocalUserContext from "./LocalUserContext";
 import LocalControls from "./Controls/LocalControls";
 import GridVideo from "./GridVideo";
@@ -38,7 +36,6 @@ const AgoraUIKit: React.FC<PropsInterface> = (props: PropsInterface) => {
           </TracksConfigure>
         )}
       </div>
-      <button onClick={props.callbacks?.EndCall}>Call End</button>
     </PropsProvider>
   );
 };

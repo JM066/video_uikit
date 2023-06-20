@@ -22,7 +22,6 @@ const startScreenshare = async (
 
   async function init() {
     try {
-      console.log(screenClient);
       if (tokenUrl) {
         screenClient.on("token-privilege-will-expire", async () => {
           console.log("token will expire");
